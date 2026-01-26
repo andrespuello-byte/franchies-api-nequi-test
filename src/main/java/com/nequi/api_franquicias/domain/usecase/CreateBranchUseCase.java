@@ -10,6 +10,9 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.buildBranch;
 
 public class CreateBranchUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -21,32 +24,15 @@ public class CreateBranchUseCase {
     public Mono<Franchise> execute(String name, String franchiseId) {
         if(isInvalidName(name))
             return Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID));
-        return findFranchiseById(franchiseId)
+        return findFranchiseById(persistencePort, franchiseId)
                 .flatMap(franchise -> addBranchToFranchise(franchise, name))
                 .flatMap(persistencePort::save);
     }
 
-    public boolean isInvalidName(String name){
-        return name.isEmpty();
-    }
-
-    private Mono<Franchise> findFranchiseById(String franchiseId){
-        return persistencePort
-                .findById(franchiseId)
-                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)));
-    }
-
     private Mono<Franchise> addBranchToFranchise(Franchise franchise, String name){
         List<Branch> updateBranches = new ArrayList<>(franchise.getBranches());
-        updateBranches.add(buildBranch(name));
+        updateBranches.add(buildBranch(name, generateId()));
         franchise.setBranches(updateBranches);
         return Mono.just(franchise);
-    }
-
-    private Branch buildBranch(String name){
-        return Branch.builder()
-                .id(generateId())
-                .name(name)
-                .build();
     }
 }
