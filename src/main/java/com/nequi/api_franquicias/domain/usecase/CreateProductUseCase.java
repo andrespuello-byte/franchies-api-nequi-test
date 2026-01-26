@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.buildProduct;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
 
 public class CreateProductUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -25,8 +28,8 @@ public class CreateProductUseCase {
                 .then(persistencePort.findById(franchiseId))
                 .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
                 .flatMap(franchise -> {
-                    Branch branch = findBranch(franchise, branchId);
-                    Product newProduct = buildProduct(product);
+                    Branch branch = findBranchById(franchise, branchId);
+                    Product newProduct = buildProduct(product, generateId());
 
                     List<Product> updatedProducts = new ArrayList<>(branch.getProducts());
                     updatedProducts.add(newProduct);
@@ -34,22 +37,6 @@ public class CreateProductUseCase {
                     updateBranchProducts(franchise, branchId, updatedProducts);
                     return persistencePort.save(franchise);
                 });
-    }
-
-    private Branch findBranch(Franchise franchise, String branchId) {
-        return franchise.getBranches()
-                .stream()
-                .filter(branch -> branch.getId().equals(branchId))
-                .findFirst()
-                .orElseThrow(() -> new BussinesException(ErrorMessage.BRANCH_NOT_FOUND));
-    }
-
-    private Product buildProduct(Product product) {
-        return Product.builder()
-                .id(generateId())
-                .name(product.getName())
-                .stock(product.getStock())
-                .build();
     }
 
     private void updateBranchProducts(Franchise franchise, String branchId, List<Product> products) {
@@ -61,7 +48,7 @@ public class CreateProductUseCase {
     }
 
     private Mono<Void> validateProduct(Product product) {
-        if (product == null || product.getName() == null || product.getName().isBlank()) {
+        if (isInvalidName(product.getName())) {
             return Mono.error(new BussinesException(ErrorMessage.PRODUCT_NAME_INVALID));
         }
         if (product.getStock() < 0) {

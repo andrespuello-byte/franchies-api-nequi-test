@@ -6,6 +6,7 @@ import com.nequi.api_franquicias.domain.model.Franchise;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Mono;
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
 
 public class CreateFranchiseUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -15,15 +16,19 @@ public class CreateFranchiseUseCase {
     }
 
     public Mono<Franchise> execute(String name){
+        if(isInvalidName(name))
+            return Mono.error(new BussinesException(ErrorMessage.FRANCHISE_INVALID_NAME));
         return persistencePort
                 .findByName(name)
                 .flatMap(existing ->
                         Mono.<Franchise>error(new BussinesException(ErrorMessage.FRANCHISE_ALREADY_EXISTS)))
-                .switchIfEmpty(Mono.defer(
-                        () -> persistencePort.save(Franchise.builder()
-                                        .id(generateId())
-                                        .name(name)
-                                .build())
-                ));
+                .switchIfEmpty(Mono.defer(() -> persistencePort.save(buildFranchise(name))));
+    }
+
+    private Franchise buildFranchise(String name){
+        return Franchise.builder()
+                .id(generateId())
+                .name(name)
+                .build();
     }
 }

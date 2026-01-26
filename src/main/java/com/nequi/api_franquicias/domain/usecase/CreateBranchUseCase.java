@@ -10,6 +10,9 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.buildBranch;
 
 public class CreateBranchUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -19,24 +22,17 @@ public class CreateBranchUseCase {
     }
 
     public Mono<Franchise> execute(String name, String franchiseId) {
-        return persistencePort
-                .findById(franchiseId)
-                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
-                .flatMap(franchise -> {
-                    Branch newBranch = Branch.builder()
-                            .id(generateId())
-                            .name(name.trim())
-                            .build();
-
-                    List<Branch> updatedBranches = new ArrayList<>(franchise.getBranches());
-                    updatedBranches.add(newBranch);
-
-                    franchise.setBranches(updatedBranches);
-                    return persistencePort.save(franchise);
-                });
+        if(isInvalidName(name))
+            return Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID));
+        return findFranchiseById(persistencePort, franchiseId)
+                .flatMap(franchise -> addBranchToFranchise(franchise, name))
+                .flatMap(persistencePort::save);
     }
 
-    public boolean isEmptyName(String name){
-        return name.isEmpty();
+    private Mono<Franchise> addBranchToFranchise(Franchise franchise, String name){
+        List<Branch> updateBranches = new ArrayList<>(franchise.getBranches());
+        updateBranches.add(buildBranch(name, generateId()));
+        franchise.setBranches(updateBranches);
+        return Mono.just(franchise);
     }
 }

@@ -11,6 +11,9 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
+
 public class DeleteProductUseCase {
     private final FranchisePersistencePort persistencePort;
 
@@ -18,26 +21,16 @@ public class DeleteProductUseCase {
         this.persistencePort = persistencePort;
     }
 
-    public Mono<Franchise> execute(String franchiseId, String branchId, String productId){
-        return persistencePort
-                .findById(franchiseId)
-                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
+    public Mono<Franchise> execute(String franchiseId, String branchId, String productId) {
+        return findFranchiseById(persistencePort, franchiseId)
                 .flatMap(franchise -> {
-                    Branch branch = findBranch(franchise, branchId);
+                    Branch branch = findBranchById(franchise, branchId);
                     return removeProduct(branch.getProducts(), productId)
                             .flatMap(updatedProducts -> {
                                 updateBranchProducts(franchise, branchId, updatedProducts);
                                 return persistencePort.save(franchise);
                             });
                 });
-    }
-
-    private Branch findBranch(Franchise franchise, String branchId){
-        return franchise.getBranches()
-                .stream()
-                .filter(b -> b.getId().equals(branchId))
-                .findFirst()
-                .orElseThrow(() -> new BussinesException(ErrorMessage.BRANCH_NOT_FOUND));
     }
 
     private void updateBranchProducts(Franchise franchise, String branchId, List<Product> products) {
