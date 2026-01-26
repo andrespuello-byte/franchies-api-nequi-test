@@ -6,11 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
 import static com.nequi.api_franquicias.infrastructure.entrypoint.util.RouterPath.*;
 
 @Configuration
 public class RouterRest {
     @Bean
+    @FranchiseRouterDoc
     public RouterFunction<ServerResponse> franchiseRoutes(FranchiseHandler handler){
         return RouterFunctions
                 .route()
