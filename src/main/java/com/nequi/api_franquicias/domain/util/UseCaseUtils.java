@@ -15,9 +15,9 @@ public class UseCaseUtils {
         return name.isEmpty();
     }
 
-    public static Branch buildBranch(String name, Supplier<String> idGenerator){
+    public static Branch buildBranch(String name, String id){
         return Branch.builder()
-                .id(idGenerator.get())
+                .id(id)
                 .name(name)
                 .build();
     }
