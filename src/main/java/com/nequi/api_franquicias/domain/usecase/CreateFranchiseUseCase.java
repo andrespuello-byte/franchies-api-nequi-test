@@ -15,15 +15,23 @@ public class CreateFranchiseUseCase {
     }
 
     public Mono<Franchise> execute(String name){
+        if(isInvalidName(name))
+            return Mono.error(new BussinesException(ErrorMessage.FRANCHISE_INVALID_NAME));
         return persistencePort
                 .findByName(name)
                 .flatMap(existing ->
                         Mono.<Franchise>error(new BussinesException(ErrorMessage.FRANCHISE_ALREADY_EXISTS)))
-                .switchIfEmpty(Mono.defer(
-                        () -> persistencePort.save(Franchise.builder()
-                                        .id(generateId())
-                                        .name(name)
-                                .build())
-                ));
+                .switchIfEmpty(Mono.defer(() -> persistencePort.save(buildFranchise(name))));
+    }
+
+    private boolean isInvalidName(String name){
+        return name.isBlank();
+    }
+
+    private Franchise buildFranchise(String name){
+        return Franchise.builder()
+                .id(generateId())
+                .name(name)
+                .build();
     }
 }
