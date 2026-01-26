@@ -39,7 +39,7 @@ The project follows **Clean Architecture** as defined by Bancolombia:
 │   └── config
 │
 ├── infrastructure
-│   ├── driven-adapters
+│   ├── adapter
 │   ├── entrypoints
 │   │   ├── reactive
 │   │   │   ├── handler

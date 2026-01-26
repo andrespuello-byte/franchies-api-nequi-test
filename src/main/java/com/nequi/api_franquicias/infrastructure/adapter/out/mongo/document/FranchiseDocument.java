@@ -1,7 +1,6 @@
 package com.nequi.api_franquicias.infrastructure.adapter.out.mongo.document;
 
 
-import com.nequi.api_franquicias.domain.model.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
