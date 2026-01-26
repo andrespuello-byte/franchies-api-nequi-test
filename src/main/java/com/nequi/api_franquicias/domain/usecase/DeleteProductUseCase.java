@@ -8,6 +8,7 @@ import com.nequi.api_franquicias.domain.model.Product;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteProductUseCase {
@@ -23,8 +24,11 @@ public class DeleteProductUseCase {
                 .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
                 .flatMap(franchise -> {
                     Branch branch = findBranch(franchise, branchId);
-                    removeProduct(branch.getProducts(), productId);
-                    return persistencePort.save(franchise);
+                    return removeProduct(branch.getProducts(), productId)
+                            .flatMap(updatedProducts -> {
+                                updateBranchProducts(franchise, branchId, updatedProducts);
+                                return persistencePort.save(franchise);
+                            });
                 });
     }
 
@@ -36,9 +40,21 @@ public class DeleteProductUseCase {
                 .orElseThrow(() -> new BussinesException(ErrorMessage.BRANCH_NOT_FOUND));
     }
 
-    private void removeProduct(List<Product> products, String productId){
-        boolean removed = products.removeIf(product -> product.getId().equals(productId));
-        if(!removed)
-            throw new BussinesException(ErrorMessage.PRODUCT_NOT_EXISTS);
+    private void updateBranchProducts(Franchise franchise, String branchId, List<Product> products) {
+        franchise.getBranches().forEach(branch -> {
+            if (branch.getId().equals(branchId)) {
+                branch.setProducts(products);
+            }
+        });
+    }
+
+    private Mono<List<Product>> removeProduct(List<Product> products, String productId){
+        List<Product> updatedProducts = products.stream()
+                .filter(product -> !product.getId().equals(productId))
+                .toList();
+        if (updatedProducts.size() == products.size()) {
+            return Mono.error(new BussinesException(ErrorMessage.PRODUCT_NOT_EXISTS));
+        }
+        return Mono.just(new ArrayList<>(updatedProducts));
     }
 }

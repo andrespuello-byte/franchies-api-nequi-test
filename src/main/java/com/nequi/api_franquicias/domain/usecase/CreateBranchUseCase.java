@@ -7,6 +7,7 @@ import com.nequi.api_franquicias.domain.model.Franchise;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
 
@@ -22,12 +23,15 @@ public class CreateBranchUseCase {
                 .findById(franchiseId)
                 .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
                 .flatMap(franchise -> {
-                    if(isEmptyName(name)) return Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID));
-                    List<Branch> branches = franchise.getBranches();
-                    branches.add(Branch.builder()
-                                    .id(generateId())
-                                    .name(name).build());
-                    franchise.setBranches(branches);
+                    Branch newBranch = Branch.builder()
+                            .id(generateId())
+                            .name(name.trim())
+                            .build();
+
+                    List<Branch> updatedBranches = new ArrayList<>(franchise.getBranches());
+                    updatedBranches.add(newBranch);
+
+                    franchise.setBranches(updatedBranches);
                     return persistencePort.save(franchise);
                 });
     }

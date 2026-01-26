@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo-db
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: franchises_db
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    container_name: franchises-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/franchises_db
+    depends_on:
+      - mongo
+    restart: always
+
+volumes:
+  mongo_data:
