@@ -2,6 +2,7 @@ package com.nequi.api_franquicias.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,5 +16,13 @@ public class OpenApiConfig {
                         .version("1.0.0")
                         .description("Reactive API for managing franchises, branches and products")
                 );
+    }
+
+    @Bean
+    public OpenApiCustomizer customerGlobalHeaderOpenApi(){
+        return openApi -> openApi.getPaths()
+                .values().forEach(pathItem ->
+                        pathItem.readOperations().forEach(operation ->
+                                operation.addTagsItem("Franchises")));
     }
 }

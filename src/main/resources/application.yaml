@@ -4,3 +4,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/franchises_db
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    ui-path: /swager-ui.html
+  api-docs:
+    enabled: true
