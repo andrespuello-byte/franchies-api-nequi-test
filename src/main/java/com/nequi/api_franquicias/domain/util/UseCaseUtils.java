@@ -8,8 +8,6 @@ import com.nequi.api_franquicias.domain.model.Product;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Mono;
 
-import java.util.function.Supplier;
-
 public class UseCaseUtils {
     public static boolean isInvalidName(String name){
         return name.isEmpty();
