@@ -22,8 +22,8 @@ public class UseCaseUtils {
                 .build();
     }
 
-    public static Product buildProduct(Product product, Supplier<String> idGenerator){
-        product.setId(idGenerator.get());
+    public static Product buildProduct(Product product, String id){
+        product.setId(id);
         return product;
     }
 
