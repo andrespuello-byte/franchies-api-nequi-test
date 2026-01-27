@@ -1,7 +1,11 @@
-.gradle
-build
-out
-node_modules
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+build/
+.gradle/
+bin/
+
 .git
 .gitignore
-README.md

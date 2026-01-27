@@ -3,7 +3,12 @@ spring:
     name: api-franquicias
   data:
     mongodb:
-      uri: mongodb://localhost:27017/franchises_db
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/franchises_db}
+
+aws:
+  dynamodb:
+    table-name: ${DYNAMODB_TABLE_NAME:Franchises}
+    region: ${AWS_REGION:us-east-1}
 
 springdoc:
   swagger-ui:
