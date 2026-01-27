@@ -36,4 +36,14 @@ public class UseCaseConfig {
     public UpdateProductStockUseCase updateProductStockUseCase(FranchisePersistencePort persistencePort){
         return new UpdateProductStockUseCase(persistencePort);
     }
+
+    @Bean
+    public UpdateFranchiseNameUseCase updateFranchiseNameUseCase(FranchisePersistencePort persistencePort){
+        return new UpdateFranchiseNameUseCase(persistencePort);
+    }
+
+    @Bean
+    public UpdateBranchNameUseCase updateBranchNameUseCase(FranchisePersistencePort persistencePort){
+        return new UpdateBranchNameUseCase(persistencePort);
+    }
 }
