@@ -7,4 +7,5 @@ public class RouterPath {
     public static final String DELETE_PRODUCT_PATH = CREATE_FRANCHISE_PATH  + "/{franchiseId}/branches/{branchId}/products/{productId}";
     public static final String UPDATE_STOCK_PRODUCT = CREATE_FRANCHISE_PATH + "/{franchiseId}/branches/{branchId}/products/{productId}/stock";
     public static final String MAX_PRODUCT_BRANCH = CREATE_FRANCHISE_PATH + "/{franchiseId}/branches/products/max-stock";
+    public static final String UPDATE_FRANCHISE_NAME = CREATE_FRANCHISE_PATH + "/{franchiseId}";
 }
