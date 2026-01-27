@@ -23,6 +23,7 @@ public class RouterRest {
                     .PATCH(CREATE_BRANCH_PATH, handler::updateBranchName)
 
                     .POST(CREATE_PRODUCT_PATH, handler::createProduct)
+                    .PATCH(CREATE_PRODUCT_PATH, handler::updateProductName)
                     .DELETE(DELETE_PRODUCT_PATH, handler::deleteProduct)
                     .PATCH(UPDATE_STOCK_PRODUCT, handler::updateStockProduct)
                     .GET(MAX_PRODUCT_BRANCH, handler::getMaxStockProductUseCase)

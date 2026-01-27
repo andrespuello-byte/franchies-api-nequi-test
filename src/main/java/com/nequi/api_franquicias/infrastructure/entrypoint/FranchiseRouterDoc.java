@@ -113,6 +113,20 @@ import static com.nequi.api_franquicias.infrastructure.entrypoint.util.RouterPat
                     )
             ),
             @RouterOperation(
+                    path = CREATE_PRODUCT_PATH,
+                    method = RequestMethod.PATCH,
+                    operation = @Operation(
+                            operationId = "updateProductToBranch",
+                            summary = "Update product to a branch",
+                            description = "Update a new product to a specific branch.",
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Product added successfully"),
+                                    @ApiResponse(responseCode = "404", description = "Branch not found"),
+                                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                            }
+                    )
+            ),
+            @RouterOperation(
                     path = DELETE_PRODUCT_PATH,
                     method = RequestMethod.DELETE,
                     operation = @Operation(
