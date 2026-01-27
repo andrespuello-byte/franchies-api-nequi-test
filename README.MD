@@ -74,7 +74,7 @@ Creates a new franchise.
 ### 2️⃣ Add Product to a Branch
 
 ```
-POST /branches/{branchId}/products
+POST /franchises/{franchiseId}/branches/{branchId}/products
 ```
 
 Adds a product to a specific branch.
@@ -84,7 +84,7 @@ Adds a product to a specific branch.
 ### 3️⃣ Delete Product from a Branch
 
 ```
-DELETE /branches/{branchId}/products/{productId}
+DELETE /franchises/{franchiseId}/branches/{branchId}/products/{productId}
 ```
 
 Removes a product from a branch.
@@ -94,7 +94,7 @@ Removes a product from a branch.
 ### 4️⃣ Update Product Stock
 
 ```
-PATCH /products/{productId}/stock
+PATCH /franchises/{franchiseId}/products/{productId}/stock
 ```
 
 Updates the stock of a product.
@@ -145,16 +145,10 @@ Example error response:
 
 The application can be packaged and run using Docker.
 
-### Build the image
+### Run docker-compose
 
 ```bash
-docker build -t franchises-api .
-```
-
-### Run the container
-
-```bash
-docker run -p 8080:8080 franchises-api
+docker-compose up --build -d
 ```
 
 The API and Swagger UI will be available at:
