@@ -29,6 +29,7 @@ public class FranchiseHandler {
     private final UpdateProductStockUseCase updateProductStockUseCase;
     private final GetMaxStockProductUseCase getMaxStockProductUseCase;
     private final UpdateFranchiseNameUseCase updateFranchiseNameUseCase;
+    private final UpdateBranchNameUseCase updateBranchNameUseCase;
 
     private final FranchiseMapper mapper;
 
@@ -75,6 +76,25 @@ public class FranchiseHandler {
                 .filter(name -> !name.isBlank())
                 .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID)))
                 .flatMap(branchName -> createBranchUseCase.execute(branchName, franchiseId))
+                .flatMap(franchise ->
+                        ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(mapper.toFranchiseResponse(franchise))
+                )
+                .onErrorResume(BussinesException.class, ex ->
+                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
+                .onErrorResume(Exception.class, ex ->
+                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+    }
+
+    public Mono<ServerResponse> updateBranchName(ServerRequest request){
+        String franchiseId = request.pathVariable("franchiseId");
+        String branchId = request.pathVariable("branchId");
+        return request.bodyToMono(CreateBranchRequest.class)
+                .map(CreateBranchRequest::name)
+                .filter(name -> !name.isBlank())
+                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID)))
+                .flatMap(name -> updateBranchNameUseCase.execute(franchiseId, branchId, name))
                 .flatMap(franchise ->
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
