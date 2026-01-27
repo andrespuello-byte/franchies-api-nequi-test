@@ -28,6 +28,8 @@ class CreateFranchiseUseCaseTest {
         String franchiseName = "Nequi Franchise";
         Franchise franchise = new Franchise("1", franchiseName, List.of());
 
+        when(persistencePort.findByName(anyString()))
+                .thenReturn(Mono.empty());
         when(persistencePort.save(any(Franchise.class)))
                 .thenReturn(Mono.just(franchise));
 
