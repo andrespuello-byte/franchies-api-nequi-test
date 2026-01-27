@@ -17,6 +17,7 @@ public class RouterRest {
         return RouterFunctions
                 .route()
                     .POST(CREATE_FRANCHISE_PATH, handler::createFranchise)
+                    .PATCH(UPDATE_FRANCHISE_NAME, handler::updateFranchiseName)
                     .POST(CREATE_BRANCH_PATH, handler::createBranch)
                     .POST(CREATE_PRODUCT_PATH, handler::createProduct)
                     .DELETE(DELETE_PRODUCT_PATH, handler::deleteProduct)

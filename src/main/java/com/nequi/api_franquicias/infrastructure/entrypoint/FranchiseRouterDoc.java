@@ -51,6 +51,26 @@ import static com.nequi.api_franquicias.infrastructure.entrypoint.util.RouterPat
                     )
             ),
             @RouterOperation(
+                    path = UPDATE_FRANCHISE_NAME,
+                    method = RequestMethod.PATCH,
+                    operation = @Operation(
+                            operationId = "updateFranchise",
+                            summary = "Update franchise name",
+                            description = "Update a existing franchise using the provided name.",
+                            requestBody = @RequestBody(
+                                    required = true,
+                                    content = @Content(
+                                            schema = @Schema(implementation = CreateFranchiseRequest.class)
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(responseCode = "201", description = "Franchise updated successfully"),
+                                    @ApiResponse(responseCode = "400", description = "Invalid request data"),
+                                    @ApiResponse(responseCode = "500", description = "Internal server error")
+                            }
+                    )
+            ),
+            @RouterOperation(
                     path = CREATE_BRANCH_PATH,
                     method = RequestMethod.POST,
                     operation = @Operation(
