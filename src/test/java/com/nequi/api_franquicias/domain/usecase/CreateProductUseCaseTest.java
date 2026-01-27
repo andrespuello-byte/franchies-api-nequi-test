@@ -77,7 +77,7 @@ class CreateProductUseCaseTest {
                 .thenReturn(Mono.empty());
 
         Mono<Franchise> result =
-                useCase.execute(new Product(), "invalid-franchise", "b1");
+                useCase.execute(Product.builder().name("product").stock(10).build(), "invalid-franchise", "b1");
 
         StepVerifier.create(result)
                 .expectErrorMatches(error ->
@@ -102,7 +102,7 @@ class CreateProductUseCaseTest {
                 .thenReturn(Mono.just(franchise));
 
         Mono<Franchise> result =
-                useCase.execute(new Product(), "f1", "invalid-branch");
+                useCase.execute(Product.builder().name("product").stock(10).build(), "f1", "invalid-branch");
 
         StepVerifier.create(result)
                 .expectErrorMatches(error ->

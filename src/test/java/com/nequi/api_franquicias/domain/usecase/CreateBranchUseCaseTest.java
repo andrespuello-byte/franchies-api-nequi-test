@@ -75,25 +75,14 @@ class CreateBranchUseCaseTest {
 
     @Test
     void shouldThrowErrorWhenBranchNameIsInvalid() {
-        Franchise franchise = Franchise.builder()
-                .id("f1")
-                .name("Nequi")
-                .branches(new ArrayList<>())
-                .build();
-
-        when(persistencePort.findById("f1"))
-                .thenReturn(Mono.just(franchise));
-
         Mono<Franchise> result = useCase.execute("", "f1");
-
         StepVerifier.create(result)
                 .expectErrorMatches(error ->
                         error instanceof BussinesException &&
                                 error.getMessage().equals(ErrorMessage.BRANCH_NAME_INVALID)
                 )
                 .verify();
-
-        verify(persistencePort).findById("f1");
+        verify(persistencePort, never()).findById("f1");
         verify(persistencePort, never()).save(any());
     }
 }

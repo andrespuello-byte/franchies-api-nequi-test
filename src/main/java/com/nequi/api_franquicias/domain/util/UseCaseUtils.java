@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 public class UseCaseUtils {
     public static boolean isInvalidName(String name){
-        return name.isEmpty();
+        return name.isBlank();
     }
 
     public static Branch buildBranch(String name, String id){
