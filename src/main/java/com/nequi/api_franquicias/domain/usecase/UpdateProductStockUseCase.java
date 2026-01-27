@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findProduct;
 
 public class UpdateProductStockUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -28,14 +29,6 @@ public class UpdateProductStockUseCase {
                     product.setStock(stock);
                     return persistencePort.save(franchise);
                 });
-    }
-
-    private Product findProduct(List<Product> products, String productId){
-        return products
-                .stream()
-                .filter(product -> product.getId().equals(productId))
-                .findFirst()
-                .orElseThrow(() -> new BussinesException(ErrorMessage.PRODUCT_NOT_EXISTS));
     }
 
     private void validateStock(int stock){

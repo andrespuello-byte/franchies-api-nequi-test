@@ -3,10 +3,7 @@ package com.nequi.api_franquicias.infrastructure.entrypoint.handler;
 import com.nequi.api_franquicias.domain.exceptions.BussinesException;
 import com.nequi.api_franquicias.domain.exceptions.ErrorMessage;
 import com.nequi.api_franquicias.domain.usecase.*;
-import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.CreateBranchRequest;
-import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.CreateFranchiseRequest;
-import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.CreateProductRequest;
-import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.UpdateStockProductRequest;
+import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.*;
 import com.nequi.api_franquicias.infrastructure.entrypoint.dto.response.ProductMaxStockResponse;
 import com.nequi.api_franquicias.infrastructure.entrypoint.mapper.FranchiseMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +27,7 @@ public class FranchiseHandler {
     private final GetMaxStockProductUseCase getMaxStockProductUseCase;
     private final UpdateFranchiseNameUseCase updateFranchiseNameUseCase;
     private final UpdateBranchNameUseCase updateBranchNameUseCase;
+    private final UpdateProductNameUseCase updateProductNameUseCase;
 
     private final FranchiseMapper mapper;
 
@@ -43,11 +41,11 @@ public class FranchiseHandler {
                 .flatMap(saved ->
                         ServerResponse.status(HttpStatus.CREATED)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(saved)
-                                .onErrorResume(BussinesException.class, ex ->
-                                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                                .onErrorResume(Exception.class, ex ->
-                                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR)));
+                                .bodyValue(saved))
+                .onErrorResume(BussinesException.class, ex ->
+                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
+                .onErrorResume(Exception.class, ex ->
+                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
     }
 
     public Mono<ServerResponse> updateFranchiseName(ServerRequest request){
@@ -115,6 +113,27 @@ public class FranchiseHandler {
                 .filter(product -> !product.getName().isBlank())
                 .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.PRODUCT_NAME_INVALID)))
                 .flatMap(product -> createProductUseCase.execute(product, franchiseId, branchId))
+                .flatMap(franchise ->
+                        ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(mapper.toFranchiseResponse(franchise))
+                )
+                .onErrorResume(BussinesException.class, ex ->
+                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
+                .onErrorResume(Exception.class, ex ->
+                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+    }
+
+    public Mono<ServerResponse> updateProductName(ServerRequest request){
+        String franchiseId = request.pathVariable("franchiseId");
+        String branchId = request.pathVariable("branchId");
+        String productId = request.pathVariable("productId");
+        return request
+                .bodyToMono(UpdateProductName.class)
+                .map(UpdateProductName::name)
+                .filter(name -> !name.isBlank())
+                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.PRODUCT_NAME_INVALID)))
+                .flatMap(productName -> updateProductNameUseCase.execute(franchiseId, branchId, productId, productName))
                 .flatMap(franchise ->
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
