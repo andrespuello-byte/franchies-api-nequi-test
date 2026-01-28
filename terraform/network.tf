@@ -45,7 +45,7 @@ resource "aws_lb_target_group" "tg" {
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
-  health_check { path = "/v3/api-docs" } # Swagger JSON para salud
+  health_check { path = "/v3/api-docs" }
 }
 
 resource "aws_lb_listener" "http" {
@@ -55,17 +55,5 @@ resource "aws_lb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
-  }
-}
-
-resource "aws_security_group" "docdb_sg" {
-  name   = "${var.project_name}-docdb-sg"
-  vpc_id = var.vpc_id
-
-  ingress {
-    from_port       = 27017
-    to_port         = 27017
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs_sg.id] # Solo permite tráfico desde la API
   }
 }
