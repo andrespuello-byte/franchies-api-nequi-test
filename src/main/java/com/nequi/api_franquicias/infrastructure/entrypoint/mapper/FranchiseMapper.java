@@ -1,6 +1,7 @@
 package com.nequi.api_franquicias.infrastructure.entrypoint.mapper;
 
 import com.nequi.api_franquicias.domain.model.Branch;
+import com.nequi.api_franquicias.domain.model.BranchProductReport;
 import com.nequi.api_franquicias.domain.model.Franchise;
 import com.nequi.api_franquicias.domain.model.Product;
 import com.nequi.api_franquicias.infrastructure.entrypoint.dto.request.CreateProductRequest;
@@ -9,7 +10,6 @@ import com.nequi.api_franquicias.infrastructure.entrypoint.dto.response.Franchis
 import com.nequi.api_franquicias.infrastructure.entrypoint.dto.response.ProductMaxStockResponse;
 import com.nequi.api_franquicias.infrastructure.entrypoint.dto.response.ProductResponse;
 import org.springframework.stereotype.Component;
-import reactor.util.function.Tuple2;
 
 import java.util.List;
 
@@ -19,16 +19,11 @@ public class FranchiseMapper {
         return new Product("", request.name(), request.stock());
     }
 
-    public ProductMaxStockResponse toResponse(Tuple2<Branch, Product> tuple){
-        Branch branch = tuple.getT1();
-        Product product = tuple.getT2();
-
+    public ProductMaxStockResponse toResponse(BranchProductReport branchProductReport){
         return new ProductMaxStockResponse(
-                branch.getId(),
-                branch.getName(),
-                product.getId(),
-                product.getName(),
-                product.getStock()
+                branchProductReport.branchName(),
+                branchProductReport.productName(),
+                branchProductReport.stock()
         );
     }
 

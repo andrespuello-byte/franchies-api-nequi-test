@@ -1,11 +1,9 @@
 package com.nequi.api_franquicias.domain.usecase;
 
-import com.nequi.api_franquicias.domain.model.Branch;
+import com.nequi.api_franquicias.domain.model.BranchProductReport;
 import com.nequi.api_franquicias.domain.model.Product;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Flux;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
 import java.util.Comparator;
 
@@ -18,16 +16,28 @@ public class GetMaxStockProductUseCase {
         this.persistencePort = persistencePort;
     }
 
-    public Flux<Tuple2<Branch, Product>> execute(String franchiseId){
+    public Flux<BranchProductReport> execute(String franchiseId, int page, int size){
         return findFranchiseById(persistencePort, franchiseId)
                 .flatMapMany(franchise ->
                         Flux.fromIterable(franchise.getBranches())
+                                .skip((long) page * size)
+                                .take(size)
                                 .flatMap(branch ->
                                         Flux.fromIterable(branch.getProducts())
                                                 .sort(Comparator.comparingInt(Product::getStock).reversed())
                                                 .next()
-                                                .map(product -> Tuples.of(branch, product))
+                                                .map(product -> buildBranchProductReport(
+                                                        branch.getName(),
+                                                        product)
                                 )
-                );
+                ));
+    }
+
+    public BranchProductReport buildBranchProductReport(String branchName, Product product){
+        return new BranchProductReport(
+                branchName,
+                product.getName(),
+                product.getStock()
+        );
     }
 }

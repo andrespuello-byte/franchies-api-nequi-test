@@ -28,7 +28,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/franchises_db
+      SPRING_DATA_MONGODB_URI: mongodb+srv://franchises-api:ps0QDitWWEYm90Q5@cluster0.uas15dz.mongodb.net/franchises_db?retryWrites=true&w=majority&tlsAllowInvalidHostnames=true
+      #SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/franchises_db
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       mongo:
