@@ -1,4 +1,3 @@
-# Etapa 1: Construcción
 FROM gradle:8.6-jdk21-alpine AS build
 
 WORKDIR /app
@@ -16,12 +15,21 @@ RUN ./gradlew bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
+USER root
+
+RUN apk add --no-cache ca-certificates && update-ca-certificates
+
 RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/app.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
+
+RUN chown spring:spring app.jar
+
+
+USER spring:spring
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
