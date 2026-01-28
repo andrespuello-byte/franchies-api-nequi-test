@@ -14,8 +14,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import static com.nequi.api_franquicias.infrastructure.entrypoint.util.BuildErrorResponse.buildErrorResponse;
-
 @Component
 @RequiredArgsConstructor
 public class FranchiseHandler {
@@ -41,11 +39,7 @@ public class FranchiseHandler {
                 .flatMap(saved ->
                         ServerResponse.status(HttpStatus.CREATED)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(saved))
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                                .bodyValue(saved));
     }
 
     public Mono<ServerResponse> updateFranchiseName(ServerRequest request){
@@ -59,11 +53,7 @@ public class FranchiseHandler {
                 .flatMap(franchise ->
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(mapper.toFranchiseResponse(franchise)))
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                                .bodyValue(mapper.toFranchiseResponse(franchise)));
     }
 
     public Mono<ServerResponse> createBranch(ServerRequest request){
@@ -78,11 +68,7 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> updateBranchName(ServerRequest request){
@@ -97,11 +83,7 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> createProduct(ServerRequest request){
@@ -117,11 +99,7 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> updateProductName(ServerRequest request){
@@ -138,11 +116,7 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> deleteProduct(ServerRequest request) {
@@ -155,11 +129,7 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> updateStockProduct(ServerRequest request){
@@ -176,25 +146,23 @@ public class FranchiseHandler {
                         ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(mapper.toFranchiseResponse(franchise))
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 
     public Mono<ServerResponse> getMaxStockProductUseCase(ServerRequest request){
         String franchiseId = request.pathVariable("franchiseId");
+        int page = request.queryParam("page")
+                .map(Integer::parseInt)
+                .orElse(0);
+        int size = request.queryParam("size")
+                .map(Integer::parseInt)
+                .orElse(10);
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(
-                        getMaxStockProductUseCase.execute(franchiseId)
+                        getMaxStockProductUseCase.execute(franchiseId, page, size)
                                 .map(mapper::toResponse),
                         ProductMaxStockResponse.class
-                )
-                .onErrorResume(BussinesException.class, ex ->
-                        buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage()))
-                .onErrorResume(Exception.class, ex ->
-                        buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.GENERAL_ERROR));
+                );
     }
 }
