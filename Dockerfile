@@ -27,7 +27,6 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 RUN chown spring:spring app.jar
 
-
 USER spring:spring
 
 EXPOSE 8080

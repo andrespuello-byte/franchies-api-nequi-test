@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "app" {
     environment = [
       {
           name  = "SPRING_DATA_MONGODB_URI",
-          value = "mongodb://admin_user:password123@${aws_docdb_cluster.docdb.endpoint}:27017/franchises_db?tls=false&retryWrites=false"
+          value = "mongodb+srv://franchises-api:ps0QDitWWEYm90Q5@cluster0.uas15dz.mongodb.net/franchises_db?retryWrites=true&w=majority&tlsAllowInvalidHostnames=true"
       },
       { name = "AWS_REGION", value = "us-east-1" }
     ]
