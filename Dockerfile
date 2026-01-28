@@ -1,4 +1,3 @@
-# Etapa 1: Construcción
 FROM gradle:8.6-jdk21-alpine AS build
 
 WORKDIR /app
@@ -21,7 +20,9 @@ USER spring:spring
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/app.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
+
+RUN chown spring:spring app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
