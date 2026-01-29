@@ -1,5 +1,6 @@
 package com.nequi.api_franquicias.infrastructure.entrypoint;
 
+import com.nequi.api_franquicias.infrastructure.entrypoint.filter.ResilienceFilter;
 import com.nequi.api_franquicias.infrastructure.entrypoint.handler.FranchiseHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ import static com.nequi.api_franquicias.infrastructure.entrypoint.util.RouterPat
 public class RouterRest {
     @Bean
     @FranchiseRouterDoc
-    public RouterFunction<ServerResponse> franchiseRoutes(FranchiseHandler handler){
+    public RouterFunction<ServerResponse> franchiseRoutes(FranchiseHandler handler, ResilienceFilter filter){
         return RouterFunctions
                 .route()
                     .POST(CREATE_FRANCHISE_PATH, handler::createFranchise)
@@ -27,6 +28,7 @@ public class RouterRest {
                     .DELETE(DELETE_PRODUCT_PATH, handler::deleteProduct)
                     .PATCH(UPDATE_STOCK_PRODUCT, handler::updateStockProduct)
                     .GET(MAX_PRODUCT_BRANCH, handler::getMaxStockProductUseCase)
+                .filter(filter.applyResilience("persistenceCircuit", "apiRateLimiter"))
                 .build();
     }
 }

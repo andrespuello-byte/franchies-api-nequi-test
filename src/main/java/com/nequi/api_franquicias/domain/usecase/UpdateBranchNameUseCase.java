@@ -7,7 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
 
 public class UpdateBranchNameUseCase {
@@ -18,7 +17,7 @@ public class UpdateBranchNameUseCase {
     }
 
     public Mono<Franchise> execute(String franchiseId, String branchId, String name){
-        return findFranchiseById(persistencePort, franchiseId)
+        return persistencePort.findByIdOtThrow(franchiseId)
                 .flatMap(franchise -> {
                     Branch branchFound = findBranchById(franchise, branchId);
 

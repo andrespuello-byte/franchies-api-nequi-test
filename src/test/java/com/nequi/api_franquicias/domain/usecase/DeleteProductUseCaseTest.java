@@ -52,7 +52,7 @@ class DeleteProductUseCaseTest {
                 .branches(new ArrayList<>(List.of(branch)))
                 .build();
 
-        when(persistencePort.findById(franchiseId))
+        when(persistencePort.findByIdOtThrow(franchiseId))
                 .thenReturn(Mono.just(franchise));
 
         when(persistencePort.save(any(Franchise.class)))
@@ -68,14 +68,14 @@ class DeleteProductUseCaseTest {
                 })
                 .verifyComplete();
 
-        verify(persistencePort).findById(franchiseId);
+        verify(persistencePort).findByIdOtThrow(franchiseId);
         verify(persistencePort).save(any(Franchise.class));
     }
 
     @Test
     void shouldThrowErrorWhenFranchiseNotFound() {
-        when(persistencePort.findById("invalid-franchise"))
-                .thenReturn(Mono.empty());
+        when(persistencePort.findById(anyString())).thenReturn(Mono.empty());
+        when(persistencePort.findByIdOtThrow(anyString())).thenCallRealMethod();
 
         Mono<Franchise> result =
                 useCase.execute("invalid-franchise", "b1", "p1");
@@ -87,7 +87,7 @@ class DeleteProductUseCaseTest {
                 )
                 .verify();
 
-        verify(persistencePort).findById("invalid-franchise");
+        verify(persistencePort).findByIdOtThrow("invalid-franchise");
         verify(persistencePort, never()).save(any());
     }
 
@@ -99,7 +99,7 @@ class DeleteProductUseCaseTest {
                 .branches(new ArrayList<>())
                 .build();
 
-        when(persistencePort.findById("f1"))
+        when(persistencePort.findByIdOtThrow("f1"))
                 .thenReturn(Mono.just(franchise));
 
         Mono<Franchise> result =
@@ -112,7 +112,7 @@ class DeleteProductUseCaseTest {
                 )
                 .verify();
 
-        verify(persistencePort).findById("f1");
+        verify(persistencePort).findByIdOtThrow("f1");
         verify(persistencePort, never()).save(any());
     }
 
@@ -130,7 +130,7 @@ class DeleteProductUseCaseTest {
                 .branches(new ArrayList<>(List.of(branch)))
                 .build();
 
-        when(persistencePort.findById("f1"))
+        when(persistencePort.findByIdOtThrow("f1"))
                 .thenReturn(Mono.just(franchise));
 
         Mono<Franchise> result =
@@ -143,7 +143,7 @@ class DeleteProductUseCaseTest {
                 )
                 .verify();
 
-        verify(persistencePort).findById("f1");
+        verify(persistencePort).findByIdOtThrow("f1");
         verify(persistencePort, never()).save(any());
     }
 }

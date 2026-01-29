@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findProduct;
 
 public class UpdateProductNameUseCase {
@@ -20,7 +19,7 @@ public class UpdateProductNameUseCase {
     }
 
     public Mono<Franchise> execute(String franchiseId, String branchId, String productId, String name){
-        return findFranchiseById(persistencePort, franchiseId)
+        return persistencePort.findByIdOtThrow(franchiseId)
                 .flatMap(franchise -> {
                     Branch branchFound = findBranchById(franchise, branchId);
                     Product productFound = findProduct(branchFound.getProducts(), productId);

@@ -9,5 +9,7 @@ public class ErrorMessage {
     public static final String PRODUCT_NAME_INVALID = "Product name invalid";
     public static final String PRODUCT_INVALID_STOCK = "Stock value is invalid";
     public static final String BRANCH_NAME_INVALID = "Branch name is invalid";
+
     public static final String GENERAL_ERROR = "We have some problems";
+    public static final String DATABASE_TIMEOUT = "Database response is timeout";
 }

@@ -26,6 +26,7 @@ class UpdateFranchiseNameUseCaseTest {
     @Test
     public void shouldThrowExceptionWhenFranchiseNotFound(){
         when(persistencePort.findById(anyString())).thenReturn(Mono.empty());
+        when(persistencePort.findByIdOtThrow(anyString())).thenCallRealMethod();
         Mono<Franchise> result = useCase.execute("f1", "name");
         StepVerifier.create(result)
                 .expectErrorMatches(error ->
@@ -33,7 +34,7 @@ class UpdateFranchiseNameUseCaseTest {
                                 error.getMessage().equals(ErrorMessage.FRANCHISE_NOT_FOUND)
                 )
                 .verify();
-        verify(persistencePort, times(1)).findById(anyString());
+        verify(persistencePort, times(1)).findByIdOtThrow(anyString());
         verify(persistencePort, never()).save(any(Franchise.class));
     }
 
@@ -41,7 +42,7 @@ class UpdateFranchiseNameUseCaseTest {
     public void shouldBeOkWhenUpdateFranchiseName(){
         Franchise franchise = Franchise.builder().id("1").name("f2").build();
         String name = "f2";
-        when(persistencePort.findById(anyString()))
+        when(persistencePort.findByIdOtThrow(anyString()))
                 .thenReturn(Mono.just(franchise));
         when(persistencePort.save(any()))
                 .thenReturn(Mono.just(franchise));
@@ -52,7 +53,7 @@ class UpdateFranchiseNameUseCaseTest {
                     assertNotNull(response);
                     assertEquals(franchise.getName(), response.getName());
                 }).verifyComplete();
-        verify(persistencePort, times(1)).findById(anyString());
+        verify(persistencePort, times(1)).findByIdOtThrow(anyString());
         verify(persistencePort, times(1)).save(any(Franchise.class));
     }
 }

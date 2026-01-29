@@ -53,7 +53,7 @@ class UpdateProductStockUseCaseTest {
 
     @Test
     void shouldUpdateProductStockSuccessfully() {
-        when(persistencePort.findById("franchise-1"))
+        when(persistencePort.findByIdOtThrow("franchise-1"))
                 .thenReturn(Mono.just(franchise));
 
         when(persistencePort.save(any(Franchise.class)))
@@ -77,8 +77,8 @@ class UpdateProductStockUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenFranchiseNotFound() {
-        when(persistencePort.findById("franchise-1"))
-                .thenReturn(Mono.empty());
+        when(persistencePort.findById(anyString())).thenReturn(Mono.empty());
+        when(persistencePort.findByIdOtThrow(anyString())).thenCallRealMethod();
 
         StepVerifier.create(
                         useCase.execute("franchise-1", "branch-1", "product-1", 10)
@@ -92,7 +92,7 @@ class UpdateProductStockUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenBranchNotFound() {
-        when(persistencePort.findById("franchise-1"))
+        when(persistencePort.findByIdOtThrow("franchise-1"))
                 .thenReturn(Mono.just(franchise));
 
         StepVerifier.create(
@@ -104,7 +104,7 @@ class UpdateProductStockUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenProductNotFound() {
-        when(persistencePort.findById("franchise-1"))
+        when(persistencePort.findByIdOtThrow("franchise-1"))
                 .thenReturn(Mono.just(franchise));
 
         StepVerifier.create(
@@ -119,7 +119,7 @@ class UpdateProductStockUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenStockIsInvalid() {
-        when(persistencePort.findById("franchise-1"))
+        when(persistencePort.findByIdOtThrow("franchise-1"))
                 .thenReturn(Mono.just(franchise));
 
         StepVerifier.create(

@@ -8,8 +8,6 @@ import com.nequi.api_franquicias.domain.model.Product;
 import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findProduct;
 
@@ -21,7 +19,7 @@ public class UpdateProductStockUseCase {
     }
 
     public Mono<Franchise> execute(String franchiseId, String branchId, String productId, int stock){
-        return findFranchiseById(persistencePort, franchiseId)
+        return persistencePort.findByIdOtThrow(franchiseId)
                 .flatMap(franchise -> {
                     Branch branch = findBranchById(franchise, branchId);
                     Product product = findProduct(branch.getProducts(), productId);
