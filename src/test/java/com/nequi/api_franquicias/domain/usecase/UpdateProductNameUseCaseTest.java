@@ -40,7 +40,7 @@ class UpdateProductNameUseCaseTest {
     @Test
     void shouldUpdateProductNameDeeply() {
         String newName = "Nuevo Nombre Producto";
-        when(persistencePort.findById("F1")).thenReturn(Mono.just(mockFranchise));
+        when(persistencePort.findByIdOtThrow("F1")).thenReturn(Mono.just(mockFranchise));
         when(persistencePort.save(any(Franchise.class))).thenAnswer(i -> Mono.just(i.getArgument(0)));
 
         // WHEN & THEN
@@ -58,7 +58,7 @@ class UpdateProductNameUseCaseTest {
 
     @Test
     void shouldFailWhenProductNotFound() {
-        when(persistencePort.findById("F1")).thenReturn(Mono.just(mockFranchise));
+        when(persistencePort.findByIdOtThrow("F1")).thenReturn(Mono.just(mockFranchise));
 
         StepVerifier.create(useCase.execute("F1", "B1", "ID_FALSO", "Nombre"))
                 .expectError(BussinesException.class)

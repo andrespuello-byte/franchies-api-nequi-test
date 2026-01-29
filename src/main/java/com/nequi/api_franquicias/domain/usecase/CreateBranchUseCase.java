@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.buildBranch;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
 
 public class CreateBranchUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -24,7 +24,7 @@ public class CreateBranchUseCase {
     public Mono<Franchise> execute(String name, String franchiseId) {
         if(isInvalidName(name))
             return Mono.error(new BussinesException(ErrorMessage.BRANCH_NAME_INVALID));
-        return findFranchiseById(persistencePort, franchiseId)
+        return persistencePort.findByIdOtThrow(franchiseId)
                 .flatMap(franchise -> addBranchToFranchise(franchise, name))
                 .flatMap(persistencePort::save);
     }

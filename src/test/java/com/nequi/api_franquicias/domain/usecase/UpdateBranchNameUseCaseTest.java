@@ -48,7 +48,7 @@ class UpdateBranchNameUseCaseTest {
     @Test
     void shouldUpdateBranchNameSuccessfully() {
         String newName = "Nombre Nuevo";
-        when(persistencePort.findById("F1")).thenReturn(Mono.just(mockFranchise));
+        when(persistencePort.findByIdOtThrow("F1")).thenReturn(Mono.just(mockFranchise));
         when(persistencePort.save(any(Franchise.class))).thenAnswer(i -> Mono.just(i.getArgument(0)));
 
         StepVerifier.create(useCase.execute("F1", "B1", newName))
@@ -64,7 +64,7 @@ class UpdateBranchNameUseCaseTest {
 
     @Test
     void shouldFailWhenBranchDoesNotExistInFranchise() {
-        when(persistencePort.findById("F1")).thenReturn(Mono.just(mockFranchise));
+        when(persistencePort.findByIdOtThrow("F1")).thenReturn(Mono.just(mockFranchise));
 
         StepVerifier.create(useCase.execute("F1", "ID_INEXISTENTE", "Cualquier Nombre"))
                 .expectError(BussinesException.class)

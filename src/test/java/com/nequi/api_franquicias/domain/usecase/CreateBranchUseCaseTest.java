@@ -36,7 +36,7 @@ class CreateBranchUseCaseTest {
                 .branches(new ArrayList<>())
                 .build();
 
-        when(persistencePort.findById(franchiseId))
+        when(persistencePort.findByIdOtThrow(franchiseId))
                 .thenReturn(Mono.just(franchise));
 
         when(persistencePort.save(any(Franchise.class)))
@@ -51,14 +51,14 @@ class CreateBranchUseCaseTest {
                 })
                 .verifyComplete();
 
-        verify(persistencePort).findById(franchiseId);
+        verify(persistencePort).findByIdOtThrow(franchiseId);
         verify(persistencePort).save(any(Franchise.class));
     }
 
     @Test
     void shouldThrowErrorWhenFranchiseNotFound() {
-        when(persistencePort.findById("invalid-id"))
-                .thenReturn(Mono.empty());
+        when(persistencePort.findById("invalid-id")).thenReturn(Mono.empty());
+        when(persistencePort.findByIdOtThrow("invalid-id")).thenCallRealMethod();
 
         Mono<Franchise> result = useCase.execute("Branch", "invalid-id");
 
@@ -69,7 +69,7 @@ class CreateBranchUseCaseTest {
                 )
                 .verify();
 
-        verify(persistencePort).findById("invalid-id");
+        verify(persistencePort).findByIdOtThrow("invalid-id");
         verify(persistencePort, never()).save(any());
     }
 
@@ -82,7 +82,7 @@ class CreateBranchUseCaseTest {
                                 error.getMessage().equals(ErrorMessage.BRANCH_NAME_INVALID)
                 )
                 .verify();
-        verify(persistencePort, never()).findById("f1");
+        verify(persistencePort, never()).findByIdOtThrow("f1");
         verify(persistencePort, never()).save(any());
     }
 }

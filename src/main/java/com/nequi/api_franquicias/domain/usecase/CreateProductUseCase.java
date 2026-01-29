@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.nequi.api_franquicias.domain.util.IdGeneratorUtil.generateId;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.isInvalidName;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.buildProduct;
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
+import static com.nequi.api_franquicias.domain.util.UseCaseUtils.*;
 
 public class CreateProductUseCase {
     private final FranchisePersistencePort persistencePort;
@@ -25,8 +23,7 @@ public class CreateProductUseCase {
 
     public Mono<Franchise> execute(Product product, String franchiseId, String branchId){
         return validateProduct(product)
-                .then(persistencePort.findById(franchiseId))
-                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)))
+                .then(persistencePort.findByIdOtThrow(franchiseId))
                 .flatMap(franchise -> {
                     Branch branch = findBranchById(franchise, branchId);
                     Product newProduct = buildProduct(product, generateId());

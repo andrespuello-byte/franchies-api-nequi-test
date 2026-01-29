@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findFranchiseById;
 import static com.nequi.api_franquicias.domain.util.UseCaseUtils.findBranchById;
 
 public class DeleteProductUseCase {
@@ -22,7 +21,7 @@ public class DeleteProductUseCase {
     }
 
     public Mono<Franchise> execute(String franchiseId, String branchId, String productId) {
-        return findFranchiseById(persistencePort, franchiseId)
+        return persistencePort.findByIdOtThrow(franchiseId)
                 .flatMap(franchise -> {
                     Branch branch = findBranchById(franchise, branchId);
                     return removeProduct(branch.getProducts(), productId)

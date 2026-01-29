@@ -3,7 +3,43 @@ spring:
     name: api-franquicias
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb+srv://franchises-api:ps0QDitWWEYm90Q5@cluster0.uas15dz.mongodb.net/franchises_db?retryWrites=true&w=majority&tlsAllowInvalidHostnames=true}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/franchises_db}
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+server:
+  shutdown: graceful
+
+resilience4j:
+  ratelimiter:
+    instances:
+      apiRateLimiter:
+        limitForPeriod: 50
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0
+  circuitbreaker:
+    instances:
+      persistenceCircuit:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 50s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
 
 springdoc:
   swagger-ui:

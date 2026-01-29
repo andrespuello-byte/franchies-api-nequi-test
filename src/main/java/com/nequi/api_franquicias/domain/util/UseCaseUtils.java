@@ -5,8 +5,6 @@ import com.nequi.api_franquicias.domain.exceptions.ErrorMessage;
 import com.nequi.api_franquicias.domain.model.Branch;
 import com.nequi.api_franquicias.domain.model.Franchise;
 import com.nequi.api_franquicias.domain.model.Product;
-import com.nequi.api_franquicias.domain.ports.out.FranchisePersistencePort;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -41,11 +39,5 @@ public class UseCaseUtils {
                 .filter(product -> product.getId().equals(productId))
                 .findFirst()
                 .orElseThrow(() -> new BussinesException(ErrorMessage.PRODUCT_NOT_EXISTS));
-    }
-
-    public static Mono<Franchise> findFranchiseById(FranchisePersistencePort persistencePort, String franchiseId){
-        return persistencePort
-                .findById(franchiseId)
-                .switchIfEmpty(Mono.error(new BussinesException(ErrorMessage.FRANCHISE_NOT_FOUND)));
     }
 }
